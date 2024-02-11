@@ -1,0 +1,174 @@
+swagger: '2.0'
+info:
+  title: Story Upload API
+  version: 1.0.0
+basePath: /api
+schemes:
+  - http
+  - https
+securityDefinitions:
+  BearerAuth:
+    type: apiKey
+    in: header
+    name: Authorization
+paths:
+  /auth/register:
+    post:
+      summary: Register a new user
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              username:
+                type: string
+              password:
+                type: string
+      responses:
+        '200':
+          description: User successfully registered
+        '400':
+          description: Bad Request
+        '500':
+          description: Internal Server Error
+      tags:
+        - Auth
+
+  /auth/login:
+    post:
+      summary: Login user
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              username:
+                type: string
+              password:
+                type: string
+      responses:
+        '200':
+          description: User successfully logged in. Include a Bearer token in the response.
+        '401':
+          description: Unauthorized. Invalid credentials.
+        '500':
+          description: Internal Server Error
+      tags:
+        - Auth
+
+  /stories:
+    post:
+      summary: Get all stories
+      responses:
+        '200':
+          description: List of stories retrieved successfully
+        '401':
+          description: Unauthorized access (if authentication is required)
+        '500':
+          description: Internal Server Error
+      tags:
+        - Stories
+
+  /stories/upload:
+    post:
+      summary: Upload a new story (only for admin user)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              title:
+                type: string
+              content:
+                type: string
+      responses:
+        '200':
+          description: Story successfully uploaded
+        '401':
+          description: Only admin users can upload stories
+        '400':
+          description: Bad Request
+        '500':
+          description: Internal Server Error
+      tags:
+        - Stories
+
+  /stories/like:
+    post:
+      summary: Like a story
+      security:
+        - BearerAuth: []
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              storyId:
+                type: string
+      responses:
+        '200':
+          description: Story liked successfully
+        '401':
+          description: Invalid token or user not authorized
+        '404':
+          description: Story not found
+        '500':
+          description: Internal Server Error
+      tags:
+        - Stories
+
+  /stories/comment:
+    post:
+      summary: Comment on a story
+      security:
+        - BearerAuth: []
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              storyId:
+                type: string
+              text:
+                type: string
+      responses:
+        '200':
+          description: Comment added successfully
+        '401':
+          description: Invalid token or user not authorized
+        '404':
+          description: Story not found
+        '400':
+          description: Bad Request
+        '500':
+          description: Internal Server Error
+      tags:
+        - Stories
